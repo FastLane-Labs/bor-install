@@ -69,6 +69,8 @@ fi
 if [ ! -z "$3" ]; then
     if [ "$3" = "sentry" ] || [ "$3" = "validator" ]; then
         nodetype="$3"
+    elif [ "$3" = "archive" ]; then
+        echo "No option of archive node type in heimdall. Using default mode: $nodetype"
     else
         echo "Invalid node type: $3, choose from 'sentry' or 'validator'"
         exit 1
@@ -203,10 +205,10 @@ if [ $type = "tar.gz" ]; then
     fi
 elif [ $type = "deb" ]; then
     echo "Uninstalling any existing old binary ..."
-    sudo dpkg -r heimdall
+    sudo dpkg -r heimdalld
     echo "Installing $package ..."
     sudo dpkg -i $package
-    if [ ! -z "$profilePackage" ] && [ ! -d /var/lib/heimdall/config ]; then
+    if [ ! -z "$profilePackage" ] && sudo [ ! -d /var/lib/heimdall/config ]; then
         sudo dpkg -i $profilePackage
     fi
 elif [ $type = "rpm" ]; then
@@ -214,7 +216,7 @@ elif [ $type = "rpm" ]; then
     sudo rpm -e heimdall
     echo "Installing $package ..."
     sudo rpm -i --force $package
-    if [ ! -z "$profilePackage" ] && [ ! -d /var/lib/heimdall/config ]; then
+    if [ ! -z "$profilePackage" ] && sudo [ ! -d /var/lib/heimdall/config ]; then
         sudo rpm -i --force $profilePackage
     fi
 elif [ $type = "apk" ]; then
@@ -227,7 +229,7 @@ if [ "$version" \< "$newCLIVersion" ]; then
     bridge version || oops "something went wrong"
 fi
 echo "Checking heimdalld version ..."
-heimdalld version || oops "something went wrong"
+/usr/bin/heimdalld version || oops "something went wrong"
 
 echo "heimdall has been installed successfully!"
 
